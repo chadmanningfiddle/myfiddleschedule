@@ -1,13 +1,26 @@
 import { useState } from 'react';
-import { format, startOfWeek, addDays, addWeeks, isSameDay, startOfMonth, endOfMonth } from 'date-fns';
+import {
+  format,
+  startOfWeek,
+  addDays,
+  addWeeks,
+  isSameDay,
+  startOfMonth,
+  endOfMonth
+} from 'date-fns';
+
 import {
   Calendar as CalendarIcon,
   Clock,
   Users,
   Video,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  // We can sprinkle in some fun musical icons from lucide-react too:
+  Music2,
+  Music4
 } from 'lucide-react';
+
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import MonthView from './MonthView';
 
@@ -142,32 +155,43 @@ const Calendar = () => {
   };
 
   return (
-    <div className="space-y-6">
+    // 1) Large container with a pastel gradient background & relative positioning for floaty icons
+    <div className="relative min-h-screen bg-gradient-to-b from-blue-50 via-purple-50 to-pink-50 text-slate-700 overflow-hidden p-4 sm:p-6 md:p-8">
+
+      {/* 2) Floaty icons in background (just examples) */}
+      <div className="absolute top-8 left-8 animate-bounce">
+        <Music2 className="w-12 h-12 text-pink-300 opacity-70" />
+      </div>
+      <div className="absolute bottom-16 right-10 animate-pulse">
+        <Music4 className="w-14 h-14 text-purple-300 opacity-60" />
+      </div>
+
       {showSuccessMessage && (
         <div className="fixed top-4 right-4 z-50">
-          <div className="bg-green-50 border-2 border-green-500 text-green-700 px-6 py-4 rounded-lg shadow-lg">
+          <div className="bg-green-50 border-2 border-green-500 text-green-700 px-6 py-4 rounded-xl shadow-xl">
             <p className="font-medium">Lesson booked successfully!</p>
           </div>
         </div>
       )}
 
-      <div className="flex justify-end space-x-4">
+      {/* 3) Toggle between Week and Month view */}
+      <div className="flex justify-end space-x-4 mb-6">
         <button
           onClick={() => setViewMode('week')}
-          className={`px-4 py-2 rounded-lg ${
+          className={`px-4 py-2 rounded-full transition-colors ${
             viewMode === 'week'
-              ? 'bg-blue-600 text-white'
-              : 'text-blue-600 hover:bg-blue-50'
+              ? 'bg-blue-600 text-white shadow-md'
+              : 'bg-white text-blue-600 hover:bg-blue-50'
           }`}
         >
           Week View
         </button>
         <button
           onClick={() => setViewMode('month')}
-          className={`px-4 py-2 rounded-lg ${
+          className={`px-4 py-2 rounded-full transition-colors ${
             viewMode === 'month'
-              ? 'bg-blue-600 text-white'
-              : 'text-blue-600 hover:bg-blue-50'
+              ? 'bg-blue-600 text-white shadow-md'
+              : 'bg-white text-blue-600 hover:bg-blue-50'
           }`}
         >
           Month View
@@ -181,49 +205,48 @@ const Calendar = () => {
           onSelectDate={setSelectedDate}
         />
       ) : (
-        <Card className="bg-white shadow-xl border-0">
-          <CardHeader className="border-b border-gray-100">
+        <Card className="bg-white/90 rounded-xl shadow-2xl border-0 mb-8">
+          <CardHeader className="border-b border-gray-100 px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <CalendarIcon className="w-6 h-6 text-blue-600" />
-                <CardTitle className="text-2xl text-gray-900">
+                <CardTitle className="text-2xl text-slate-800">
                   Schedule a Lesson
                 </CardTitle>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => setCurrentWeek(addWeeks(currentWeek, -1))}
-                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setCurrentWeek(addWeeks(currentWeek, 1))}
-                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 px-6 pb-8">
             <div className="grid grid-cols-5 gap-4">
               {weekDays.map((day) => (
                 <button
                   key={day.toString()}
                   onClick={() => setSelectedDate(day)}
-                  className={`p-6 rounded-lg transition-all ${
-                    selectedDate && isSameDay(day, selectedDate)
-                      ? 'bg-blue-50 border-2 border-blue-500 shadow-sm'
-                      : 'hover:bg-gray-50 border-2 border-transparent'
-                  }`}
+                  className={`p-5 rounded-xl transition-all bg-white hover:shadow-lg
+                    ${
+                      selectedDate && isSameDay(day, selectedDate)
+                        ? 'border-2 border-blue-500 bg-blue-50 shadow-sm'
+                        : 'border-2 border-transparent'
+                    }`}
                 >
-                  <p className="font-medium text-gray-900 mb-1">
+                  <p className="font-semibold text-slate-800 mb-1">
                     {format(day, 'EEEE')}
                   </p>
-                  <p className="text-xl text-blue-900">
-                    {format(day, 'MMM d')}
-                  </p>
+                  <p className="text-xl text-blue-900">{format(day, 'MMM d')}</p>
                 </button>
               ))}
             </div>
@@ -232,16 +255,16 @@ const Calendar = () => {
       )}
 
       {selectedDate && (
-        <Card className="bg-white shadow-xl border-0">
-          <CardHeader className="border-b border-gray-100">
+        <Card className="bg-white/90 rounded-xl shadow-2xl border-0 mb-8">
+          <CardHeader className="border-b border-gray-100 px-6 py-4">
             <div className="flex items-center gap-3">
               <Clock className="w-6 h-6 text-blue-600" />
-              <CardTitle className="text-xl text-gray-900">
+              <CardTitle className="text-xl text-slate-800">
                 Available Times for {format(selectedDate, 'EEEE, MMMM d')}
               </CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 px-6 pb-8">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {getAvailableSlots(selectedDate).times.map((time) => {
                 const daySchedule =
@@ -252,11 +275,12 @@ const Calendar = () => {
                   <button
                     key={time}
                     onClick={() => handleTimeSelect(time)}
-                    className={`p-6 rounded-lg border-2 transition-all ${
-                      selectedTime === time
-                        ? 'border-blue-500 bg-blue-50 shadow-sm'
-                        : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-                    }`}
+                    className={`p-5 rounded-xl border-2 transition-all bg-white
+                      ${
+                        selectedTime === time
+                          ? 'border-blue-500 bg-blue-50 shadow-sm'
+                          : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                      }`}
                   >
                     <div className="flex items-center gap-2 mb-2">
                       {daySchedule?.type === 'JAM' ? (
@@ -266,14 +290,16 @@ const Calendar = () => {
                       ) : (
                         <CalendarIcon className="w-5 h-5 text-orange-500" />
                       )}
-                      <span className="text-lg font-medium">{time}</span>
+                      <span className="text-lg font-medium text-slate-700">
+                        {time}
+                      </span>
                     </div>
                     {isZoomClass && (
-                      <p className="text-sm text-gray-600 mb-2">
-                        {isZoomClass}
-                      </p>
+                      <p className="text-sm text-slate-600 mb-2">{isZoomClass}</p>
                     )}
-                    <p className="text-lg font-medium">${daySchedule?.price}</p>
+                    <p className="text-lg font-medium text-slate-700">
+                      ${daySchedule?.price}
+                    </p>
                     {daySchedule?.type === 'JAM' && (
                       <p className="text-sm text-gray-600 mt-2">
                         {daySchedule.maxCapacity! -
@@ -291,24 +317,24 @@ const Calendar = () => {
 
       {showBookingForm && selectedDate && selectedTime && (
         <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-2xl bg-white shadow-2xl border-0">
-            <CardHeader className="border-b border-gray-100">
-              <CardTitle className="text-2xl text-gray-900">
+          <Card className="w-full max-w-2xl bg-white rounded-xl shadow-2xl border-0">
+            <CardHeader className="border-b border-gray-100 px-6 py-4">
+              <CardTitle className="text-2xl text-slate-800">
                 Book Your Lesson
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-6">
+            <CardContent className="pt-6 px-6 pb-8">
               <div className="space-y-6">
                 <div className="bg-blue-50 rounded-lg p-6 space-y-3">
                   <p className="text-lg">
-                    <span className="font-medium text-gray-700">Date:</span>{' '}
-                    <span className="text-gray-900">
+                    <span className="font-medium text-slate-700">Date:</span>{' '}
+                    <span className="text-slate-900">
                       {format(selectedDate, 'EEEE, MMMM d, yyyy')}
                     </span>
                   </p>
                   <p className="text-lg">
-                    <span className="font-medium text-gray-700">Time:</span>{' '}
-                    <span className="text-gray-900">{selectedTime}</span>
+                    <span className="font-medium text-slate-700">Time:</span>{' '}
+                    <span className="text-slate-900">{selectedTime}</span>
                   </p>
                 </div>
 
@@ -318,15 +344,19 @@ const Calendar = () => {
                       type="checkbox"
                       checked={isRecurring}
                       onChange={(e) => setIsRecurring(e.target.checked)}
-                      className="w-5 h-5 rounded"
+                      className="w-5 h-5 rounded text-blue-600"
                     />
-                    <span className="text-lg">Make this a recurring booking</span>
+                    <span className="text-lg text-slate-700">
+                      Make this a recurring booking
+                    </span>
                   </label>
 
                   {isRecurring && (
                     <div className="ml-8 space-y-4">
                       <div>
-                        <label className="text-lg mb-2 block">Frequency:</label>
+                        <label className="text-lg text-slate-700 mb-2 block">
+                          Frequency:
+                        </label>
                         <select
                           value={recurringFrequency}
                           onChange={(e) =>
@@ -334,18 +364,22 @@ const Calendar = () => {
                               e.target.value as 'weekly' | 'biweekly'
                             )
                           }
-                          className="px-4 py-2 border rounded-lg"
+                          className="px-4 py-2 border rounded-lg text-slate-700"
                         >
                           <option value="weekly">Every week</option>
                           <option value="biweekly">Every other week</option>
                         </select>
                       </div>
                       <div>
-                        <label className="text-lg mb-2 block">Duration:</label>
+                        <label className="text-lg text-slate-700 mb-2 block">
+                          Duration:
+                        </label>
                         <select
                           value={recurringWeeks}
-                          onChange={(e) => setRecurringWeeks(Number(e.target.value))}
-                          className="px-4 py-2 border rounded-lg"
+                          onChange={(e) =>
+                            setRecurringWeeks(Number(e.target.value))
+                          }
+                          className="px-4 py-2 border rounded-lg text-slate-700"
                         >
                           <option value={4}>4 sessions</option>
                           <option value={8}>8 sessions</option>
@@ -359,7 +393,7 @@ const Calendar = () => {
                 <div className="flex justify-end gap-4">
                   <button
                     onClick={() => setShowBookingForm(false)}
-                    className="px-6 py-3 text-gray-700 hover:bg-gray-100 rounded-lg"
+                    className="px-6 py-3 text-slate-700 hover:bg-gray-100 rounded-lg"
                   >
                     Cancel
                   </button>

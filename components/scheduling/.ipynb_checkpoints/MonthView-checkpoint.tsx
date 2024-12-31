@@ -22,16 +22,19 @@ const MonthView: React.FC<MonthViewProps> = ({ currentDate, availableDates, onSe
       </CardHeader>
       <CardContent className="pt-6">
         <div className="grid grid-cols-7 gap-2">
+          {/* Weekday headers */}
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
             <div key={day} className="text-center font-medium text-gray-600">
               {day}
             </div>
           ))}
           
+          {/* Empty cells for days before month start */}
           {[...Array(monthStart.getDay())].map((_, i) => (
             <div key={`empty-${i}`} className="h-12" />
           ))}
 
+          {/* Calendar days */}
           {daysInMonth.map(date => {
             const hasAvailability = availableDates.some(d => 
               format(d, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
